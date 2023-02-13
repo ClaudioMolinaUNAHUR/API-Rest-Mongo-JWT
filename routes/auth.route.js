@@ -1,7 +1,8 @@
 import express  from "express";
-import { login, register } from "../controllers/auth.controller.js";
+import { infoUser, login, register, refreshToken, logout } from "../controllers/auth.controller.js";
 import { body } from 'express-validator';
 import { validationResultExpress } from "../middlewares/validationResultExpress.js";
+import { verifyToken } from "../middlewares/verifyToken.js";
 const router = express.Router()
 
 router.post('/register',[
@@ -23,7 +24,7 @@ router.post('/register',[
     validationResultExpress, 
     register)
 
-router.get('/login', [
+router.post('/login', [
     body('email', "Formato de email incorrecto")
         .trim()
         .isEmail()
@@ -34,5 +35,9 @@ router.get('/login', [
     ],
     validationResultExpress,
     login)
+
+router.get('/protected', verifyToken, infoUser)
+router.get('/refresh', refreshToken) //solo se usa para que las protegidas hagan el primero fetch y obtener el token de RAM
+router.get('/logout', logout)
 
 export default router; // export default, me deja cambiar nombre al importar
