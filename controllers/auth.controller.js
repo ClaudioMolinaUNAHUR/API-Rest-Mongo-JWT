@@ -1,6 +1,5 @@
 import { User } from "../models/User.js";
 import { generateRefreshToken, generateToken } from "../utils/generateToken.js";
-import jwt from "jsonwebtoken";
 //200: son mensajes exito
 //300: son errores de redireccionamiento
 //400: errores de solicitudes
@@ -60,25 +59,13 @@ const infoUser = async (req, res) => {
 
 const refreshToken = (req, res) => {
     try {
-        const refreshTokenCookie = req.cookies.refreshToken;
-        if(!refreshTokenCookie) throw new Error('invalid token')
-
-        const { uid } = jwt.verify(refreshTokenCookie, process.env.JWT_REFRESH);
-        const { token, expiresIn } = generateToken(uid);
+        const { token, expiresIn } = generateToken(req.uid);
 
         return res.json({ token, expiresIn })
+
     } catch (error) {
 
-        const tokenVerificationErrors = {
-            "invalid signature": "La firma del JWT no es válida",
-            "jwt expired": "JWT expirado",
-            "invalid token": "Token no válido",
-            "No Bearer": "Utiliza formato Bearer",
-            "jwt malformed": "jwt formato no valido"
-        };
-
-        return res.status(401).json({error: tokenVerificationErrors[error.message]});
-    
+        return res.status(500).json({error: "error de server"});    
     }
 }
 
