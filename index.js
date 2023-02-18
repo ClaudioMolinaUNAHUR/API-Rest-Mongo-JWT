@@ -14,7 +14,7 @@ const app = express();
 const whiteList = [process.env.ORIGIN1, process.env.ORIGIN2];
 app.use(cors({
     origin: function(origin, callback){
-        if(whiteList.includes(origin)){
+        if(!origin || whiteList.includes(origin)){ // para pruebas de postman se ponen sin origin, para que no bloquee el cors
             return callback(null, origin)
         }
         return callback('error de Cors' + origin + "no autorizado!")
