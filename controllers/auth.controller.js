@@ -16,7 +16,8 @@ const register = async(req, res)=> {
         await user.save();
 
         //Generar JWT
-        const {token, expiresIn} = generateToken(user._id)
+        const {token, expiresIn} = generateToken(user._id) // almacenado en memoria
+        generateRefreshToken(user._id, res) // almacenado en cookie navegador
 
         return res.status(200).json({msg: "usuario agregado",token, expiresIn});
     } catch (error) {
@@ -51,17 +52,17 @@ const login = async (req, res)=> {
 const infoUser = async (req, res) => {
     try {
         const user = await User.findById(req.id).lean();
-        return res.json({email: user.email, id: user._id})
+        return res.json({email: user.email, id: user._id});
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
 const refreshToken = (req, res) => {
     try {
-        const { token, expiresIn } = generateToken(req.uid);
+        const { token, expiresIn } = generateToken(req.id);
 
-        return res.json({ token, expiresIn })
+        return res.json({ token, expiresIn });
 
     } catch (error) {
 
